@@ -1,10 +1,13 @@
 package com.allstate.models;
 
+import com.allstate.CustomDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by localadmin on 8/17/16.
- */
+@Entity
+@Table(name = "tasks")
 public class Task {
     private int id;
     private String name;
@@ -19,10 +22,11 @@ public class Task {
         this.updatedAt = new Date();
     }
 
+    @Id
+    @GeneratedValue
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -30,7 +34,6 @@ public class Task {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -38,44 +41,49 @@ public class Task {
     public void setCategory(String category) {
         this.category = category;
     }
-
     public String getCategory() {
         return this.category;
     }
 
+    @Temporal(TemporalType.DATE)
     public void setDue(Date due) {
         this.due = due;
     }
-
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getDue() {
         return this.due;
     }
 
+    @Column(name = "is_complete", columnDefinition = "BIT", length = 1)
     public boolean isComplete() {
         return isComplete;
     }
-
     public void setComplete(boolean complete) {
         isComplete = complete;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", insertable = true, updatable = false)
     public Date getCreatedAt() {
         return createdAt;
     }
-
+    @JsonSerialize(using = CustomDateSerializer.class)
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
+    @JsonSerialize(using = CustomDateSerializer.class)
     public Date getUpdatedAt() {
         return updatedAt;
     }
-
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    protected Date updateTime(){
-        return new Date();
+    @PreUpdate
+    protected void updateTime(){
+        this.updatedAt = new Date();
     }
 }
